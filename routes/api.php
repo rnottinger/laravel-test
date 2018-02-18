@@ -18,4 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::post('/blam','TestStuffController@blam');
+Route::get('/blam','TestStuffController@blam');
+Route::post('/pricing-lamps-wallets','TestStuffController@pricingLampsWallets');
+
