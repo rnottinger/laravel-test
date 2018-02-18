@@ -77,27 +77,33 @@ class TestStuffController extends Controller
         $productJson = $request->all();
 //        return $productJson;
 
-//        Replace || with Contains
+//        Reduce to Sum
+//        1. Getting the price of each product variant
+//        2. Summing the prices to get a total cost <-- we can use reduce to replace this step
+
         $lampsAndWallets = $products->filter(function ($product) {
-//           $productType = $product['product_type'];
-//           return $productType == 'Lamp' || $productType == 'Wallet';
-
-//            return in_array($product['product_type'], ['Lamp', 'Wallet']);
-//            in_array() lets us say "here is a list of the product types we want, is this product in that list"
-
-//            The collection equivalent of in_array is contains
             return collect(['Lamp', 'Wallet'])->contains($product['product_type']);
         });
 
-        $totalCost = 0;
+        // Get all of the product variant prices
+        $prices = collect();
+
+//        $totalCost = 0;
         // Loop over every product
-        foreach ($products as $product) {
-            // Loop over the variants and add up their prices
+        foreach ($lampsAndWallets as $product) {
             foreach ($product['variants'] as $productVariant) {
-                $totalCost += $productVariant['price'];
+//                $totalCost += $productVariant['price'];
+                $prices[] = $productVariant['price'];
             }
         }
-        return $totalCost;
 
+        // Sum the prices to get a total cost
+//        $totalCost = $prices->reduce(function($total, $price) {
+//            return $total + $price;
+//        }, 0);
+//        return $totalCost;
+
+        // you can often replace reduce with a more expressive operation
+        return $prices->sum();
     }
 }
