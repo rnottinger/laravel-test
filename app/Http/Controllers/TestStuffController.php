@@ -72,18 +72,42 @@ class TestStuffController extends Controller
     }
 
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
     public function pricingLampsWallets(Request $request)
     {
         $productJson = $request->all();
         $products = collect($productJson['products']);
-
-//      Use Pluck to pluck the prices of the product variants or use sum with price parameter
 
         return $products->filter(function ($product) {
             return collect(['Lamp', 'Wallet'])->contains($product['product_type']);
         })->flatMap(function($product) {
             return $product['variants'];
         })->sum('price');
-//        })->pluck('price')->sum();
+    }
+
+    public function csvSurgery()
+    {
+        $shifts = [
+            'Shipping_Steve_A7',
+            'Sales_B9',
+            'Support_Tara_K11',
+            'J15',
+            'Warehouse_B2',
+            'Shipping_Dave_A6',
+        ];
+
+        if (strrpos($shift, '_') !== false) {
+            $shiftIds = collect($shifts)->map(function($shift) {
+                $underscorePosition = strrpos($shift, '_');
+                $substringOffset = $underscorePosition + 1;
+                return substr($shift, $substringOffset);
+            });
+        } else {
+            return $shift;
+        }
+
     }
 }
