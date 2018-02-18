@@ -70,4 +70,25 @@ class TestStuffController extends Controller
 //        $collection = collect($items);
 
     }
+
+
+    public function pricingLampsWallets(Request $request)
+    {
+        $productJson = $request->all();
+//        return $productJson;
+
+        $totalCost = 0;
+        // Loop over every product
+        foreach ($products as $product) {
+            $productType = $product['product_type'];
+            // If the product is a lamp or wallet...
+            if ($productType == 'Lamp' || $productType == 'Wallet') {
+                // Loop over the variants and add up their prices
+                foreach ($product['variants'] as $productVariant) {
+                    $totalCost += $productVariant['price'];
+                } }
+        }
+        return $totalCost;
+
+    }
 }
