@@ -75,11 +75,8 @@ class TestStuffController extends Controller
     public function pricingLampsWallets(Request $request)
     {
         $productJson = $request->all();
-//        return $productJson;
 
-//        Reduce to Sum
-//        1. Getting the price of each product variant
-//        2. Summing the prices to get a total cost <-- we can use reduce to replace this step
+//        Replace Nested Loop with FlatMap
 
         $lampsAndWallets = $products->filter(function ($product) {
             return collect(['Lamp', 'Wallet'])->contains($product['product_type']);
@@ -88,22 +85,33 @@ class TestStuffController extends Controller
         // Get all of the product variant prices
         $prices = collect();
 
-//        $totalCost = 0;
-        // Loop over every product
+//        it looks like we are trying to map product variants into their prices
+//        but we are starting with a collection of products, not a collection of variants
+//        One thing that gets us a little bit closer is to map each product into just its variants
+        $variants = $lampsAndWallets->map(function(product) {
+           return $product['variants'];
+        })->flatten(1);
+//        the issue we have now is we have a collection of arrays of variants, not just one big list of variants
+//        flatten is a collection operation that flattens a deep collection to a single level
+//        using map and flatten together like this is so common that
+//              there is a single method called flatMap that combines them
+
+        [
+// ...
+//  { "title": "Blue", "price": 29.33 },
+//  { "title": "Turquoise", "price": 18.50 },
+//  { "title": "Sky Blue", "price": 20.00 },
+//  { "title": "White", "price": 17.97 },
+//  { "title": "Azure", "price": 65.99 },
+//  { "title": "Salmon", "price": 1.66 },
+//  // ...
+//]
         foreach ($lampsAndWallets as $product) {
             foreach ($product['variants'] as $productVariant) {
-//                $totalCost += $productVariant['price'];
                 $prices[] = $productVariant['price'];
             }
         }
 
-        // Sum the prices to get a total cost
-//        $totalCost = $prices->reduce(function($total, $price) {
-//            return $total + $price;
-//        }, 0);
-//        return $totalCost;
-
-        // you can often replace reduce with a more expressive operation
         return $prices->sum();
     }
 }
