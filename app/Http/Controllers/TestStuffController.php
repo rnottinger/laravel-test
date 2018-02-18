@@ -76,12 +76,17 @@ class TestStuffController extends Controller
     {
         $productJson = $request->all();
 //        return $productJson;
-//        Our GOAL is to take this one big foreach loop
-//              and figure out how we can break it down
-//                  into a series of simple, independent, chainable steps
+
+//        Replace || with Contains
         $lampsAndWallets = $products->filter(function ($product) {
-           $productType = $product['product_type'];
-           return $productType == 'Lamp' || $productType == 'Wallet';
+//           $productType = $product['product_type'];
+//           return $productType == 'Lamp' || $productType == 'Wallet';
+
+//            return in_array($product['product_type'], ['Lamp', 'Wallet']);
+//            in_array() lets us say "here is a list of the product types we want, is this product in that list"
+
+//            The collection equivalent of in_array is contains
+            return collect(['Lamp', 'Wallet'])->contains($product['product_type']);
         });
 
         $totalCost = 0;
