@@ -77,28 +77,28 @@ class TestStuffController extends Controller
         $productJson = $request->all();
         $products = collect($productJson['products']);
 
-//        Replace Nested Loop with FlatMap
+//        Collapse this whole thing into a single pipeline
 
-        $lampsAndWallets = $products->filter(function ($product) {
+        return $products->filter(function ($product) {
             return collect(['Lamp', 'Wallet'])->contains($product['product_type']);
-        });
-
-        $prices = collect();
-
-        $variants = $lampsAndWallets->flatMap(function($product) {
-           return $product['variants'];
-        });
-
-        $prices = $variants->map(function ($productVariant) {
+        })->flatMap(function($product) {
+            return $product['variants'];
+        })->map(function ($productVariant) {
             return $productVariant['price'];
-        });
+        })->sum();
 
-//        foreach ($lampsAndWallets as $product) {
-//            foreach ($product['variants'] as $productVariant) {
-//                $prices[] = $productVariant['price'];
-//            }
-//        }
+//        $lampsAndWallets = $products->filter(function ($product) {
+//            return collect(['Lamp', 'Wallet'])->contains($product['product_type']);
+//        });
 
-        return $prices->sum();
+//        $variants = $lampsAndWallets->flatMap(function($product) {
+//           return $product['variants'];
+//        });
+
+//        $prices = $variants->map(function ($productVariant) {
+//            return $productVariant['price'];
+//        });
+
+//        return $prices->sum();
     }
 }
