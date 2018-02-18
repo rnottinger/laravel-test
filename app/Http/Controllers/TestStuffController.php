@@ -75,6 +75,7 @@ class TestStuffController extends Controller
     public function pricingLampsWallets(Request $request)
     {
         $productJson = $request->all();
+        $products = collect($productJson['products']);
 
 //        Replace Nested Loop with FlatMap
 
@@ -82,35 +83,21 @@ class TestStuffController extends Controller
             return collect(['Lamp', 'Wallet'])->contains($product['product_type']);
         });
 
-        // Get all of the product variant prices
         $prices = collect();
 
-//        it looks like we are trying to map product variants into their prices
-//        but we are starting with a collection of products, not a collection of variants
-//        One thing that gets us a little bit closer is to map each product into just its variants
-        $variants = $lampsAndWallets->map(function(product) {
+        $variants = $lampsAndWallets->flatMap(function($product) {
            return $product['variants'];
-        })->flatten(1);
-//        the issue we have now is we have a collection of arrays of variants, not just one big list of variants
-//        flatten is a collection operation that flattens a deep collection to a single level
-//        using map and flatten together like this is so common that
-//              there is a single method called flatMap that combines them
+        });
 
-        [
-// ...
-//  { "title": "Blue", "price": 29.33 },
-//  { "title": "Turquoise", "price": 18.50 },
-//  { "title": "Sky Blue", "price": 20.00 },
-//  { "title": "White", "price": 17.97 },
-//  { "title": "Azure", "price": 65.99 },
-//  { "title": "Salmon", "price": 1.66 },
-//  // ...
-//]
-        foreach ($lampsAndWallets as $product) {
-            foreach ($product['variants'] as $productVariant) {
-                $prices[] = $productVariant['price'];
-            }
-        }
+        $prices = $variants->map(function ($productVariant) {
+            return $productVariant['price'];
+        });
+
+//        foreach ($lampsAndWallets as $product) {
+//            foreach ($product['variants'] as $productVariant) {
+//                $prices[] = $productVariant['price'];
+//            }
+//        }
 
         return $prices->sum();
     }
