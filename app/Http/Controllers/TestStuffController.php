@@ -76,17 +76,21 @@ class TestStuffController extends Controller
     {
         $productJson = $request->all();
 //        return $productJson;
+//        Our GOAL is to take this one big foreach loop
+//              and figure out how we can break it down
+//                  into a series of simple, independent, chainable steps
+        $lampsAndWallets = $products->filter(function ($product) {
+           $productType = $product['product_type'];
+           return $productType == 'Lamp' || $productType == 'Wallet';
+        });
 
         $totalCost = 0;
         // Loop over every product
         foreach ($products as $product) {
-            $productType = $product['product_type'];
-            // If the product is a lamp or wallet...
-            if ($productType == 'Lamp' || $productType == 'Wallet') {
-                // Loop over the variants and add up their prices
-                foreach ($product['variants'] as $productVariant) {
-                    $totalCost += $productVariant['price'];
-                } }
+            // Loop over the variants and add up their prices
+            foreach ($product['variants'] as $productVariant) {
+                $totalCost += $productVariant['price'];
+            }
         }
         return $totalCost;
 
