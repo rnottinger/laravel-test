@@ -118,27 +118,33 @@ class TestStuffController extends Controller
 
     public function whatsYourGithubScore(Request $request)
     {
-        $events= collect($request->all());
-        $lastPhpstormOff=$events->pop();
-        // Get all of the event types
-        $eventTypes = $events->pluck('type');
+        return $this->githubScore($request->all());
+    }
 
-        // Loop over the event types and add up the corresponding scores
-        $score = 0;
+    public function githubScore($events)
+    {
+        return $this->fetchEvents($events)
+            ->pluck('type')
+            ->map(function ($eventType){
+                return $this->lookupEventScore($eventType);
+            })
+            ->sum();
+    }
 
-        $scores = $eventTypes->map(function($eventType) {
-            $eventScores = collect([
-                'PushEvent' => 5,
-                'CreateEvent' => 4,
-                'IssuesEvent' => 3,
-                'CommitCommentEvent' => 2,
-            ]);
-//            if(! isset($eventScores[$eventType])) {
-//                return 1;
-//            }
-            return $eventScores->get($eventType,1);  // Whenever current $eventType is ? then return value
+    public function fetchEvents($events)
+    {
+        $eventsCollection = collect($events);
+        $lastPhpstormOff = $eventsCollection->pop();
+        return $eventsCollection;
+    }
 
-        });
-        return $scores->sum();
+    public function lookupEventScore($eventType)
+    {
+        return collect([
+            'PushEvent' => 5,
+            'CreateEvent' => 4,
+            'IssuesEvent' => 3,
+            'CommitCommentEvent' => 2,
+        ])->get($eventType,1);
     }
 }
