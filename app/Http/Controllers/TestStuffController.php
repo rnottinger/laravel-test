@@ -98,16 +98,32 @@ class TestStuffController extends Controller
             'Warehouse_B2',
             'Shipping_Dave_A6',
         ];
+        $shiftIds = collect($shifts)->map(function($shift) {
+            return collect(explode('_', $shift))->last();
+            // Collections are a great tool for a lot of string processing situations
+//            $parts = explode('_', $shift);
+            // explode just gives you the string back if doesn't contain the delimiter you specify
+//            return end($parts);
+        });
+        return response([
+            'shiftIds' => $shiftIds
+        ]);
+/*
+       Instead of keeping track of character offsets and dealing with substrings
+            we just want the last part
+                instead of looking for the last underscore,
+                    lets just split the substring into its parts using explode
 
-        if (strrpos($shift, '_') !== false) {
             $shiftIds = collect($shifts)->map(function($shift) {
-                $underscorePosition = strrpos($shift, '_');
-                $substringOffset = $underscorePosition + 1;
-                return substr($shift, $substringOffset);
+                if (strrpos($shift, '_') !== false) {
+                    $underscorePosition = strrpos($shift, '_');
+                    $substringOffset = $underscorePosition + 1;
+                    return substr($shift, $substringOffset);
+                } else {
+                    return $shift;
+                }
             });
-        } else {
-            return $shift;
-        }
+*/
 
     }
 }
