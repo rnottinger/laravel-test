@@ -118,14 +118,14 @@ class TestStuffController extends Controller
 
     public function whatsYourGithubScore(Request $request)
     {
-        $events= $request->all();
-        $removed = array_pop($events);  // remove the PHPSTORM SESSION from last element
+        $events= collect($request->all());
+        $lastPhpstormOff=$events->pop();
+
+//        $removed = array_pop($events);  // remove the PHPSTORM SESSION from last element
 
         // Get all of the event types
-        $eventTypes = [];
-        foreach ($events as $event) {
-            $eventTypes[] = $event['type'];
-        }
+        $eventTypes = $events->pluck('type');
+
         // Loop over the event types and add up the corresponding scores
         $score = 0;
         foreach ($eventTypes as $eventType) {
