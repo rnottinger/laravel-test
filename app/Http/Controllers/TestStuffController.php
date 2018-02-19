@@ -147,4 +147,25 @@ class TestStuffController extends Controller
             'CommitCommentEvent' => 2,
         ])->get($eventType,1);
     }
+
+    public function formattingPullRequestComment()
+    {
+        $messages = [
+            'Opening brace must be the last content on the line',
+            'Closing brace must be on a line by itself',
+            'Each PHP statement must be on a line by itself',
+        ];
+
+        $this->buildComment($messages);
+    }
+
+    public function buildComment($messages)
+    {
+        $comment = '';
+
+        foreach ($messages as $message) {
+            $comment .= "- {$message}\n";
+        }
+        return $comment;
+    }
 }
