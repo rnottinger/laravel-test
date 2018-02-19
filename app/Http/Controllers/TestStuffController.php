@@ -120,32 +120,31 @@ class TestStuffController extends Controller
     {
         $events= collect($request->all());
         $lastPhpstormOff=$events->pop();
-
-//        $removed = array_pop($events);  // remove the PHPSTORM SESSION from last element
-
         // Get all of the event types
         $eventTypes = $events->pluck('type');
 
         // Loop over the event types and add up the corresponding scores
         $score = 0;
-        foreach ($eventTypes as $eventType) {
+
+        $scores = $eventTypes->map(function($eventType) {
             switch ($eventType) {
                 case 'PushEvent':
-                    $score += 5;
+                    return 5;
                     break;
                 case 'CreateEvent':
-                    $score += 4;
+                    return 4;
                     break;
                 case 'IssuesEvent':
-                    $score += 3;
+                    return 3;
                     break;
                 case 'CommitCommentEvent':
-                    $score += 2;
+                    return 2;
                     break;
                 default:
-                    $score += 1;
-                    break; }
-        }
-        return $score;
+                    return 1;
+                    break;
+            }
+        });
+        return $scores->sum();
     }
 }
