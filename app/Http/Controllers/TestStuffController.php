@@ -108,19 +108,19 @@ class TestStuffController extends Controller
 
     public function binaryToDecimal($binary)
     {
-//        Using a for loop
+//        Split the string into columns first
+        $columns = collect(str_split($binary))
+            ->reverse()
+            ->values();
+//        convert or transform the binary values to their decimal values
+//                which sounds like something we could do with map
+//                we need to know which exponent is associated with each column
+//                    but all we have is the column value itself
+//                        column keys look like exponents we need
+//                            but they are backwards
+//                                The laravel Collection object has a reverse method
+//
+//        $columns->reverse()->values();  //but it reverses the keys as well, but values() method re-keysthe coollection back to a normal 0-based index
 
-        $total = 0;
-        $exponent = strlen($binary) - 1;
-        for ($i = 0; $i < strlen($binary); $i++) {
-            $decimal = $binary[$i] * (2 ** $exponent);
-            $total += $decimal;
-            $exponent--;
-        }
-        return $total;
-
-//        return response([
-//            'boom' => 'blam'
-//        ]);
     }
 }
