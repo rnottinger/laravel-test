@@ -127,23 +127,17 @@ class TestStuffController extends Controller
         $score = 0;
 
         $scores = $eventTypes->map(function($eventType) {
-            switch ($eventType) {
-                case 'PushEvent':
-                    return 5;
-                    break;
-                case 'CreateEvent':
-                    return 4;
-                    break;
-                case 'IssuesEvent':
-                    return 3;
-                    break;
-                case 'CommitCommentEvent':
-                    return 2;
-                    break;
-                default:
-                    return 1;
-                    break;
+            $eventScores = [
+                'PushEvent' => 5,
+                'CreateEvent' => 4,
+                'IssuesEvent' => 3,
+                'CommitCommentEvent' => 2,
+            ];
+            if(! isset($eventScores[$eventType])) {
+                return 1;
             }
+            return $eventScores[$eventType];  // Whenever current $eventType is ? then return value
+
         });
         return $scores->sum();
     }
