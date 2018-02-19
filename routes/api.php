@@ -22,3 +22,4 @@ Route::get('/blam','TestStuffController@blam');
 Route::post('/pricing-lamps-wallets','TestStuffController@pricingLampsWallets');
 Route::get('csv-surgery','TestStuffController@csvSurgery');
 Route::get('binary-to-decimal/{binary}','TestStuffController@binaryToDecimal');
+Route::post('whats-your-github-score','TestStuffController@whatsYourGithubScore');

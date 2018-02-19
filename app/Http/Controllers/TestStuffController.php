@@ -115,4 +115,37 @@ class TestStuffController extends Controller
                 return $column * (2 ** $exponent);
             })->sum();
     }
+
+    public function whatsYourGithubScore(Request $request)
+    {
+        $events= $request->all();
+        $removed = array_pop($events);  // remove the PHPSTORM SESSION from last element
+
+        // Get all of the event types
+        $eventTypes = [];
+        foreach ($events as $event) {
+            $eventTypes[] = $event['type'];
+        }
+        // Loop over the event types and add up the corresponding scores
+        $score = 0;
+        foreach ($eventTypes as $eventType) {
+            switch ($eventType) {
+                case 'PushEvent':
+                    $score += 5;
+                    break;
+                case 'CreateEvent':
+                    $score += 4;
+                    break;
+                case 'IssuesEvent':
+                    $score += 3;
+                    break;
+                case 'CommitCommentEvent':
+                    $score += 2;
+                    break;
+                default:
+                    $score += 1;
+                    break; }
+        }
+        return $score;
+    }
 }
