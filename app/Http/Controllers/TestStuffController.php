@@ -145,4 +145,57 @@ class TestStuffController extends Controller
         }
         return $score;
     }
+
+    public function whatsYourGithubScore(Request $request)
+    {
+        return $this->githubScore($request->all());
+    }
+
+    public function githubScore($events)
+    {
+        return $this->fetchEvents($events)
+            ->pluck('type')
+            ->map(function ($eventType){
+                return $this->lookupEventScore($eventType);
+            })
+            ->sum();
+    }
+
+    public function fetchEvents($events)
+    {
+        $eventsCollection = collect($events);
+        $lastPhpstormOff = $eventsCollection->pop();
+        return $eventsCollection;
+    }
+
+    public function lookupEventScore($eventType)
+    {
+        return collect([
+            'PushEvent' => 5,
+            'CreateEvent' => 4,
+            'IssuesEvent' => 3,
+            'CommitCommentEvent' => 2,
+        ])->get($eventType,1);
+    }
+
+    public function formattingPullRequestComment()
+    {
+        $messages = [
+            'Opening brace must be the last content on the line',
+            'Closing brace must be on a line by itself',
+            'Each PHP statement must be on a line by itself',
+        ];
+
+        $this->buildComment($messages);
+    }
+
+    public function buildComment($messages)
+    {
+        $comment = '';
+
+        foreach ($messages as $message) {
+            $comment .= "- {$message}\n";
+        }
+        return $comment;
+    }
 }
