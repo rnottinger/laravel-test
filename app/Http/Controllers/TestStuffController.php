@@ -108,12 +108,42 @@ class TestStuffController extends Controller
 
     public function binaryToDecimal($binary)
     {
-        return collect(str_split($binary))
-            ->reverse()
-            ->values()
-            ->map(function ($column, $exponent) {
-                return $column * (2 ** $exponent);
-            })->sum();
+        return bindec($binary);
+    }
+
+    public function whatsYourGithubScore($username)
+    {
+        // Imperitive solution
+        // Grab the events from the API, in the real world you'd probably use
+        // Guzzle or similar here, but keeping it simple for the sake of brevity.
+        $url = "https://api.github.com/users/{$username}/events";
+        $events = json_decode(file_get_contents($url), true);
+        // Get all of the event types
+        $eventTypes = [];
+        foreach ($events as $event) {
+            $eventTypes[] = $event['type'];
+        }
+        // Loop over the event types and add up the corresponding scores
+        $score = 0;
+        foreach ($eventTypes as $eventType) {
+            switch ($eventType) {
+                case 'PushEvent':
+                    $score += 5;
+                    break;
+                case 'CreateEvent':
+                    $score += 4;
+                    break;
+                case 'IssuesEvent':
+                    $score += 3;
+                    break;
+                case 'CommitCommentEvent':
+                    $score += 2;
+                    break;
+                default:
+                    $score += 1;
+                    break; }
+        }
+        return $score;
     }
 
     public function whatsYourGithubScore(Request $request)
